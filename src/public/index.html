@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+      <style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  #chat {
+    background: #ffffff;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    width: 300px;
+  }
+
+  .message {
+    display: none;
+  }
+
+
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+
+  input:focus {
+    border-color: #007bff;
+  }
+
+  button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
+
+  #submit {
+    margin-top: 10px;
+    padding: 10px;
+    width: 100%;
+   
+  }
+
+  #send {
+    width: 100%;
+  }
+</style>
+
+      
+    </head>
+<body>
+  
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
+
+   
+    <div id="chat">
+    <input id="username"  placeholder="Your name" /> 
+    <button id="submit" >Submit</button>
+    <br><br>
+  <input id="message" class="message" placeholder="Your message" />
+  <br>
+  <button style="padding: 10px; width: 100px; margin-top: 10px;" id="send" class="message">Send</button>
+</div>
+    <script>
+       
+
+       const socket = io("http://localhost:1001")
+       const msg = document.getElementById("message")
+       const chatBox = document.getElementById("chat")
+       const button = document.getElementById("send")
+       const submit = document.getElementById("submit")
+       const messageInput = document.getElementsByClassName("message")
+
+        socket.on("connect", () => {
+            console.log("connected")
+
+            socket.on("receive message", (data) => {
+                const p = document.createElement("p")
+                p.textContent = `${data.username}: ${data.message}`
+                chatBox.appendChild(p)
+            })
+        })
+
+
+        socket.emit("send message", (data) => {
+            document.createElement("p").textContent = data
+        })
+
+        
+        submit.addEventListener("click", ()=> {
+            socket.emit("new user", {
+                username: document.getElementById("username").value,
+                socketId: socket.id
+            })
+            username.style.display = "none"
+            submit.style.display = "none"
+            messageInput[0].style.display = "inline-block"
+            messageInput[1].style.display = "inline-block"
+
+        })
+
+
+
+        button.addEventListener("click", (e) => {
+            socket.emit("send message" ,{
+                username: document.getElementById("username").value,
+                message: document.getElementById("message").value
+            })
+            const p = document.createElement("p")
+            p.textContent = `${document.getElementById("username").value}: ${document.getElementById("message").value}`
+            chatBox.appendChild(p)
+        })
+
+        socket.on("receive message", data => {
+              
+        
+
+        })
+
+              
+            
+    </script>
+</body>
+</html>

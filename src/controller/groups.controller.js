@@ -34,14 +34,14 @@ const postGroup = async (req, res) => {
 }
 
 const editGroup = async (req, res) => {
-    const groups = groupsIo.read()
+    const groups = await groupsIo.read()
     const { id, name, description, url } = req.body
     const editedGroup = groups.map(group => group.id == id ? { ...group, id, name, description, url, date: new Date() } : group)
     res.render("groups", { editedGroup })
 }
 
 const deleteGroup = async (req, res) => {
-    const groups = groupsIo.read()
+    const groups = await groupsIo.read()
     const id = req.params.id
     const afterDeleted = groups.filter(group => group.id != id)
     res.render("groups", {
